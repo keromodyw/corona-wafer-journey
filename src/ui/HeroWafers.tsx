@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import type { Group } from 'three'
 import { COL } from '../three/theme'
+import { AutoPause } from '../three/AutoPause'
 import { Finger, Sheet } from '../three/shapes'
 
 function Floaters() {
@@ -55,6 +56,7 @@ export function HeroWafers({ className = '' }: { className?: string }) {
         <directionalLight position={[5, 6, 4]} intensity={1.4} />
         <directionalLight position={[-4, -2, 3]} intensity={0.5} color="#ffddc2" />
         <Floaters />
+        <AutoPause />
       </Canvas>
     </div>
   )

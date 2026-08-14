@@ -782,6 +782,13 @@ html.lenis body {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.stage-nav.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .stage-nav::before {

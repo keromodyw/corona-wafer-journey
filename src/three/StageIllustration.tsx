@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import type { Group, Mesh } from 'three'
 import type { Stage, StageScene } from '../data/stages'
 import { COL } from './theme'
+import { AutoPause } from './AutoPause'
 import { Finger, Sheet } from './shapes'
 
 function Sieve({ y = 0.95 }: { y?: number }) {
@@ -464,6 +465,7 @@ export function StageIllustration({ stage, animate }: { stage: Stage; animate: b
           <SceneFor scene={stage.scene} />
         </Suspense>
       </Rotator>
+      <AutoPause mode={animate ? 'always' : 'demand'} />
     </Canvas>
   )
 }

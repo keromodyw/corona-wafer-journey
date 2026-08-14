@@ -4,6 +4,7 @@ import { scrollToCenter } from '../core/scroll'
 
 export function StageNav() {
   const [active, setActive] = useState(0)
+  const [hidden, setHidden] = useState(false)
 
   useEffect(() => {
     const els = STAGES.map((s) => document.getElementById(`stage-${s.num}`))
@@ -21,6 +22,9 @@ export function StageNav() {
         if (r.top < center) idx = i
       }
       setActive((prev) => (prev === idx ? prev : idx))
+      const flow = document.getElementById('flowchart')
+      const nextHidden = !!flow && flow.getBoundingClientRect().top <= center
+      setHidden((prev) => (prev === nextHidden ? prev : nextHidden))
     }
     update()
     window.addEventListener('scroll', update, { passive: true })
@@ -32,7 +36,7 @@ export function StageNav() {
   }, [])
 
   return (
-    <nav className="stage-nav" aria-label="Jump to a stage">
+    <nav className={hidden ? 'stage-nav hidden' : 'stage-nav'} aria-label="Jump to a stage">
       <span className="stage-nav-cap" aria-hidden="true">
         STAGES
       </span>
