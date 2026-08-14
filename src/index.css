@@ -1200,6 +1200,46 @@ html.lenis body {
 /* ---------- responsive ---------- */
 @media (max-width: 1100px) {
   .stage-nav {
+    flex-direction: row;
+    top: auto;
+    right: auto;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: calc(100vw - 24px);
+    gap: 3px;
+    padding: 8px 10px;
+    justify-content: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .stage-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .stage-nav::before {
+    display: none;
+  }
+
+  .stage-nav-cap {
+    writing-mode: horizontal-tb;
+    font-size: 0.55rem;
+    margin-bottom: 0;
+    margin-right: 8px;
+  }
+
+  .stage-nav button {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .stage-nav-cap {
     display: none;
   }
 }
