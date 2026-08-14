@@ -422,7 +422,7 @@ function ScenePack() {
   )
 }
 
-function SceneFor({ scene }: { scene: StageScene }) {
+export function SceneFor({ scene }: { scene: StageScene }) {
   switch (scene) {
     case 'raw':
       return <SceneRaw />

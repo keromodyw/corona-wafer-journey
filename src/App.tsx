@@ -6,11 +6,13 @@ import { Header } from './ui/Header'
 import { Disclaimer } from './ui/Disclaimer'
 import { Hero } from './ui/Hero'
 import { StageSection } from './ui/StageSection'
+import { StageNav } from './ui/StageNav'
 import { FlowchartSection } from './ui/FlowchartSection'
 import { ProductSection } from './ui/ProductSection'
 import { Footer } from './ui/Footer'
 import { STAGES } from './data/stages'
 import { useReducedMotion } from './core/useReducedMotion'
+import { setLenis } from './core/scroll'
 import { log } from './core/log'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -31,6 +33,7 @@ export default function App() {
   useEffect(() => {
     if (!motionOk) return
     const lenis = new Lenis({ lerp: 0.09, anchors: true })
+    setLenis(lenis)
     lenis.on('scroll', ScrollTrigger.update)
     const raf = (time: number) => lenis.raf(time * 1000)
     gsap.ticker.add(raf)
@@ -64,6 +67,7 @@ export default function App() {
       parallax.forEach((t) => t?.scrollTrigger?.kill())
       gsap.ticker.remove(raf)
       lenis.destroy()
+      setLenis(null)
       ScrollTrigger.killAll()
     }
   }, [motionOk])
@@ -71,7 +75,11 @@ export default function App() {
   return (
     <div className={motionOk ? 'app motion-ok' : 'app'}>
       <div id="scroll-progress" aria-hidden="true" />
-      <Header qaVisible={qaVisible} onToggleQa={() => setQaVisible((v) => !v)} />
+      <Header
+        qaVisible={qaVisible}
+        onToggleQa={() => setQaVisible((v) => !v)}
+        onShowDisclaimer={() => setShowDisclaimer(true)}
+      />
       <main>
         <Hero />
         <section id="journey" className="journey">
@@ -82,6 +90,7 @@ export default function App() {
         <ProductSection />
         <FlowchartSection />
       </main>
+      <StageNav />
       <Footer onShowDisclaimer={() => setShowDisclaimer(true)} />
       {(!accepted || showDisclaimer) && <Disclaimer onAccept={accept} />}
     </div>

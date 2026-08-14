@@ -16,9 +16,16 @@ const C = {
   ink: [14, 14, 14],
   ink2: [24, 24, 24],
   card: [30, 30, 30],
+  border: [52, 52, 52],
   text: [244, 242, 234],
   dim: [168, 162, 154],
 } as const
+
+export interface InternInfo {
+  name: string
+  photo?: string
+  linkedin?: string
+}
 
 function setFill(doc: jsPDF, c: readonly number[]): void {
   doc.setFillColor(c[0], c[1], c[2])
@@ -73,16 +80,53 @@ function chip(doc: jsPDF, label: string, x: number, y: number, color: readonly n
   doc.text(label, x + w / 2, y + 6, { align: 'center' })
 }
 
-function drawCover(doc: jsPDF, stages: Stage[], logoDataUrl?: string): void {
+function drawIntern(doc: jsPDF, intern: InternInfo, cx: number, photoCy: number, nameY: number, linkY: number): void {
+  if (intern.photo) {
+    setFill(doc, C.card)
+    doc.circle(cx, photoCy, 12, 'F')
+    doc.addImage(intern.photo, 'PNG', cx - 12, photoCy - 12, 24, 24)
+    setDraw(doc, C.red)
+    doc.setLineWidth(0.6)
+    doc.circle(cx, photoCy, 12, 'S')
+  } else {
+    setFill(doc, C.card)
+    doc.circle(cx, photoCy, 12, 'F')
+    setDraw(doc, C.dim)
+    doc.setLineWidth(0.5)
+    doc.circle(cx, photoCy, 12, 'S')
+    setText(doc, C.dim)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(14)
+    doc.text('?', cx, photoCy + 1, { align: 'center' })
+  }
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(8)
+  setText(doc, C.text)
+  doc.text(intern.name, cx, nameY, { align: 'center' })
+
+  if (intern.linkedin) {
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(6.5)
+    doc.setTextColor(110, 165, 255)
+    const label = 'LinkedIn ↗'
+    const lw = doc.getTextWidth(label)
+    doc.text(label, cx, linkY, { align: 'center' })
+    doc.link(cx - lw / 2 - 1, linkY - 5, lw + 2, 6, { url: intern.linkedin })
+  } else {
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(6.5)
+    setText(doc, C.dim)
+    doc.text('LinkedIn — coming soon', cx, linkY, { align: 'center' })
+  }
+}
+
+function drawCover(doc: jsPDF, stages: Stage[], logoDataUrl?: string, interns: InternInfo[] = []): void {
   setFill(doc, C.ink)
   doc.rect(0, 0, W, H, 'F')
 
-  setDraw(doc, C.red)
-  doc.setLineWidth(0.4)
-  doc.roundedRect(12, 12, W - 24, H - 24, 6, 6, 'S')
-
   if (logoDataUrl) {
-    doc.addImage(logoDataUrl, 'PNG', W / 2 - 24, 16, 48, 48)
+    doc.addImage(logoDataUrl, 'PNG', W / 2 - 24, 14, 48, 48)
   } else {
     setFill(doc, C.red)
     doc.circle(W / 2, 40, 24, 'F')
@@ -99,47 +143,60 @@ function drawCover(doc: jsPDF, stages: Stage[], logoDataUrl?: string): void {
   doc.setFontSize(16)
   setText(doc, C.text)
   doc.setFont('helvetica', 'normal')
-  doc.text('Production & Quality Control', W / 2, 82.5, { align: 'center' })
+  doc.text('Quality Assurance', W / 2, 82.5, { align: 'center' })
   doc.setFontSize(10.5)
   setText(doc, C.dim)
   doc.text('Stage-by-stage quality control across the production line', W / 2, 89.5, { align: 'center' })
 
-  setFill(doc, C.card)
-  doc.roundedRect(30, 100, W - 60, 54, 4, 4, 'F')
-  setDraw(doc, C.red)
-  doc.roundedRect(30, 100, W - 60, 54, 4, 4, 'S')
-  setText(doc, C.red)
+  /* NOT OFFICIAL badge (pill) */
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(12)
-  doc.text('NOT OFFICIAL', W / 2, 109, { align: 'center' })
+  const badgeW = doc.getTextWidth('NOT OFFICIAL') + 16
+  setFill(doc, C.ink2)
+  doc.roundedRect(W / 2 - badgeW / 2, 97, badgeW, 10, 5, 5, 'F')
+  setDraw(doc, C.red)
+  doc.setLineWidth(0.5)
+  doc.roundedRect(W / 2 - badgeW / 2, 97, badgeW, 10, 5, 5, 'S')
+  setText(doc, C.red)
+  doc.text('NOT OFFICIAL', W / 2, 104.6, { align: 'center' })
+
+  /* disclaimer text */
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8.5)
   doc.setTextColor(232, 230, 220)
   const disc = doc.splitTextToSize(SITE.disclaimer, W - 80)
-  doc.text(disc, 40, 117)
+  doc.text(disc, 40, 110)
+
+  /* interns — just like the website disclaimer */
+  const cx1 = W / 2 - 60
+  const cx2 = W / 2 + 60
+  if (interns.length > 0) {
+    drawIntern(doc, interns[0], cx1, 136, 152, 156.5)
+    if (interns[1]) drawIntern(doc, interns[1], cx2, 136, 152, 156.5)
+  }
 
   setText(doc, C.red)
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(13.5)
-  doc.text('Made by AUG round QA interns 2026', W / 2, 166, { align: 'center' })
+  doc.text('Made by AUG round QA interns 2026', W / 2, 163, { align: 'center' })
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
   setText(doc, C.dim)
-  doc.text('August 2026', W / 2, 173, { align: 'center' })
+  doc.text('August 2026', W / 2, 168, { align: 'center' })
 
-  setText(doc, C.text)
+  setText(doc, C.red)
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(14)
-  doc.text('The Journey', 30, 180)
+  doc.text('The Journey', 60, 173)
 
   const half = Math.ceil(stages.length / 2)
   doc.setFont('helvetica', 'normal')
-  doc.setFontSize(10.5)
+  doc.setFontSize(10)
   stages.forEach((stage, i) => {
     const col = i < half ? 0 : 1
     const row = i < half ? i : i - half
-    const x = 30 + col * 95
-    const y = 186 + row * 5.0
+    const x = 60 + col * 95
+    const y = 179 + row * 4.0
     setText(doc, C.red)
     doc.setFont('helvetica', 'bold')
     doc.text(`${pad2(stage.num)}`, x, y)
@@ -147,6 +204,11 @@ function drawCover(doc: jsPDF, stages: Stage[], logoDataUrl?: string): void {
     setText(doc, C.text)
     doc.text(stage.title, x + 9, y)
   })
+
+  /* the cover border is drawn LAST so it overlays the contents */
+  setDraw(doc, C.red)
+  doc.setLineWidth(0.4)
+  doc.roundedRect(12, 12, W - 24, H - 24, 6, 6, 'S')
 }
 
 function drawProgress(doc: jsPDF, current: number, total: number): void {
@@ -167,7 +229,7 @@ function drawProgress(doc: jsPDF, current: number, total: number): void {
   }
 }
 
-function drawStagePage(doc: jsPDF, stage: Stage, total: number): void {
+function drawStagePage(doc: jsPDF, stage: Stage, total: number, image?: string): void {
   doc.addPage()
 
   setFill(doc, C.ink)
@@ -183,44 +245,59 @@ function drawStagePage(doc: jsPDF, stage: Stage, total: number): void {
   doc.text(`${stage.num} / ${total}`, W - M, 19, { align: 'right' })
 
   const leftX = M
-  const leftW = 150
-  const rightX = 178
+  const leftW = 140
+  const rightX = 170
   const rightW = W - rightX - M
 
+  /* left column: process, machines, QA role, control */
   let y = 46
 
   sectionLabel(doc, 'PROCESS', leftX, y)
-  y = bodyText(doc, stage.process, leftX, y + 7, leftW, 12.5)
+  y = bodyText(doc, stage.process, leftX, y + 7, leftW, 12)
 
   if (stage.machine) {
     sectionLabel(doc, 'MACHINES', leftX, y + 9)
-    y = bodyText(doc, stage.machine, leftX, y + 16, leftW, 12.5)
+    y = bodyText(doc, stage.machine, leftX, y + 16, leftW, 12)
   }
 
   sectionLabel(doc, 'QA ENGINEER ROLE', leftX, y + 9)
+  const roleLines = doc.splitTextToSize(stage.qaRole, leftW - 14)
+  const roleH = Math.max(30, roleLines.length * 7 + 6)
   setFill(doc, C.pink)
-  doc.roundedRect(leftX, y + 16, leftW, 26, 3, 3, 'F')
+  doc.roundedRect(leftX, y + 16, leftW, roleH, 3, 3, 'F')
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(12.5)
   doc.setTextColor(14, 14, 14)
-  const roleLines = doc.splitTextToSize(stage.qaRole, leftW - 14)
-  doc.text(roleLines, leftX + 7, y + 23.5)
-  y = y + 16 + 26 + 9
+  doc.text(roleLines, leftX + 7, y + 25)
+  y = y + 16 + roleH
 
-  sectionLabel(doc, 'CONTROL', rightX, 46)
-  chip(doc, `${stage.control} — ${CONTROL_LABEL[stage.control]}`, rightX, 55, controlRgb(stage.control))
+  sectionLabel(doc, 'CONTROL', leftX, y + 9)
+  chip(doc, `${stage.control} — ${CONTROL_LABEL[stage.control]}`, leftX, y + 18, controlRgb(stage.control))
 
-  sectionLabel(doc, 'QA CHECKS', rightX, 78)
-  let cy = 85
+  /* right column: static photo of the 3D model, then QA checks */
+  const photoW = rightW
+  const photoH = (photoW * 360) / 640
+  if (image) {
+    setFill(doc, C.card)
+    doc.roundedRect(rightX, 44, photoW, photoH, 4, 4, 'F')
+    setDraw(doc, C.border)
+    doc.setLineWidth(0.4)
+    doc.roundedRect(rightX, 44, photoW, photoH, 4, 4, 'S')
+    doc.addImage(image, 'PNG', rightX, 44, photoW, photoH)
+  }
+
+  let cy = 44 + photoH + 8
+  sectionLabel(doc, 'QA CHECKS', rightX, cy)
+  cy += 7
   doc.setFont('helvetica', 'normal')
-  doc.setFontSize(12)
+  doc.setFontSize(11)
   stage.checks.forEach((check) => {
-    const lines = doc.splitTextToSize(check, rightW - 11)
+    const lines = doc.splitTextToSize(check, rightW - 10)
     setText(doc, C.red)
     doc.text('•', rightX, cy)
     setText(doc, C.text)
-    doc.text(lines, rightX + 6, cy)
-    cy += lines.length * 6 + 3
+    doc.text(lines, rightX + 5, cy)
+    cy += lines.length * 5.4 + 2.4
   })
 
   drawProgress(doc, stage.num, total)
@@ -234,13 +311,15 @@ function drawStagePage(doc: jsPDF, stage: Stage, total: number): void {
 
 export interface MultiPagePdfOptions {
   logoDataUrl?: string
+  stageImages?: Map<string, string>
+  interns?: InternInfo[]
 }
 
 export async function buildMultiPagePdf(stages: Stage[], opts: MultiPagePdfOptions = {}): Promise<jsPDF> {
   const { jsPDF } = await import('jspdf')
   const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'landscape' })
-  drawCover(doc, stages, opts.logoDataUrl)
-  stages.forEach((stage) => drawStagePage(doc, stage, stages.length))
+  drawCover(doc, stages, opts.logoDataUrl, opts.interns)
+  stages.forEach((stage) => drawStagePage(doc, stage, stages.length, opts.stageImages?.get(stage.id)))
   return doc
 }
 

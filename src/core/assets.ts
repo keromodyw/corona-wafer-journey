@@ -12,7 +12,12 @@ export const INTERNS: readonly { src?: string; alt?: string; name: string; linke
     name: 'Kirolos Mody',
     linkedin: 'https://www.linkedin.com/in/kirolos-mody',
   },
-  { name: 'Jana' },
+  {
+    src: `${import.meta.env.BASE_URL}logo/corona-logo.jpg`,
+    alt: 'Jana Ali — Corona logo',
+    name: 'Jana Ali',
+    linkedin: 'https://www.linkedin.com/in/jana-ali-108876351',
+  },
 ]
 
 export function downloadBlob(blob: Blob, filename: string): void {

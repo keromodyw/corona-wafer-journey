@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { STAGES } from '../data/stages'
 import { renderFlowchart } from '../export/toCanvas'
 import { FLOW_WIDTH } from '../export/layout'
-import { exportJpg, exportPdfSingle, exportPdfMulti } from '../export'
+import { exportJpg, exportPdfSingle, exportPdfMulti, exportNormalChart } from '../export'
 import { log } from '../core/log'
 
-type BusyKey = 'jpg' | 'pdf-single' | 'pdf-multi'
+type BusyKey = 'normal' | 'jpg' | 'pdf-single' | 'pdf-multi'
 
 interface Toast {
   kind: 'ok' | 'err'
@@ -54,6 +54,7 @@ export function FlowchartSection() {
   }
 
   const buttons: { key: BusyKey; label: string; fn: () => Promise<void>; ok: string }[] = [
+    { key: 'normal', label: 'Download normal chart', fn: () => exportNormalChart(), ok: 'Photo downloaded.' },
     { key: 'jpg', label: 'Download JPG', fn: () => exportJpg(STAGES), ok: 'JPG flowchart downloaded.' },
     { key: 'pdf-single', label: 'Download PDF · 1 page', fn: () => exportPdfSingle(STAGES), ok: 'Single-page PDF downloaded.' },
     { key: 'pdf-multi', label: 'Download PDF · detailed', fn: () => exportPdfMulti(STAGES), ok: 'Detailed multi-page PDF downloaded.' },
@@ -69,7 +70,7 @@ export function FlowchartSection() {
         {buttons.map((btn) => (
           <button
             key={btn.key}
-            className={`btn ${btn.key === 'jpg' ? 'btn-primary' : 'btn-ghost'}`}
+            className={`btn ${btn.key === 'normal' ? 'btn-primary' : 'btn-ghost'}`}
             disabled={busy !== null}
             onClick={() => runExport(btn.key, btn.fn, btn.ok)}
           >

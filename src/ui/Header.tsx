@@ -3,9 +3,10 @@ import { LOGO_SRC } from '../core/assets'
 interface HeaderProps {
   qaVisible: boolean
   onToggleQa: () => void
+  onShowDisclaimer: () => void
 }
 
-export function Header({ qaVisible, onToggleQa }: HeaderProps) {
+export function Header({ qaVisible, onToggleQa, onShowDisclaimer }: HeaderProps) {
   return (
     <header className="site-header">
       <a className="brand" href="#hero" aria-label="WAFER Journey — back to top">
@@ -21,11 +22,11 @@ export function Header({ qaVisible, onToggleQa }: HeaderProps) {
         </span>
         <span className="qa-switch-label">Quality Instructions</span>
       </label>
-      <span className="header-tag">
+      <button type="button" className="header-tag" onClick={onShowDisclaimer}>
         <span className="tag-dot" aria-hidden="true" />
         NOT OFFICIAL
         <span className="tag-sub">· made by AUG round QA interns 2026</span>
-      </span>
+      </button>
     </header>
   )
 }

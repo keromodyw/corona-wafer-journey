@@ -9,61 +9,74 @@ const FONT_BODY = '"Inter", "Segoe UI", system-ui, sans-serif'
 const BAND_H = 96
 const FLOW_PAD = 60
 
-let cachedLogo: HTMLImageElement | null = null
-let pendingLogo: Promise<HTMLImageElement | null> | null = null
-let cachedProduct: HTMLImageElement | null = null
-let pendingProduct: Promise<HTMLImageElement | null> | null = null
+const imageCache = new Map<string, HTMLImageElement | null>()
+const imagePending = new Map<string, Promise<HTMLImageElement | null>>()
+
+export function loadImage(src: string): Promise<HTMLImageElement | null> {
+  if (typeof window === 'undefined' || typeof Image === 'undefined') return Promise.resolve(null)
+  const hit = imageCache.get(src)
+  if (hit !== undefined) return Promise.resolve(hit)
+  const pending = imagePending.get(src)
+  if (pending) return pending
+  const p = new Promise<HTMLImageElement | null>((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      imageCache.set(src, img)
+      resolve(img)
+    }
+    img.onerror = () => {
+      imageCache.set(src, null)
+      log.warn(`image:load failed ${src}`)
+      resolve(null)
+    }
+    img.src = src
+  })
+  imagePending.set(src, p)
+  return p
+}
 
 export function loadLogo(): Promise<HTMLImageElement | null> {
-  if (typeof window === 'undefined' || typeof Image === 'undefined') return Promise.resolve(null)
-  if (cachedLogo) return Promise.resolve(cachedLogo)
-  if (!pendingLogo) {
-    pendingLogo = new Promise((resolve) => {
-      const img = new Image()
-      img.onload = () => {
-        cachedLogo = img
-        resolve(img)
-      }
-      img.onerror = () => {
-        log.warn('logo:load failed')
-        resolve(null)
-      }
-      img.src = LOGO_SRC
-    })
-  }
-  return pendingLogo
+  return loadImage(LOGO_SRC)
 }
 
 export function loadProductImage(): Promise<HTMLImageElement | null> {
-  if (typeof window === 'undefined' || typeof Image === 'undefined') return Promise.resolve(null)
-  if (cachedProduct) return Promise.resolve(cachedProduct)
-  if (!pendingProduct) {
-    pendingProduct = new Promise((resolve) => {
-      const img = new Image()
-      img.onload = () => {
-        cachedProduct = img
-        resolve(img)
-      }
-      img.onerror = () => {
-        log.warn('product:load failed')
-        resolve(null)
-      }
-      img.src = PRODUCT.single
-    })
-  }
-  return pendingProduct
+  return loadImage(PRODUCT.single)
 }
 
-export async function loadLogoDataUrl(): Promise<string | undefined> {
-  const img = await loadLogo()
+export async function loadImageDataUrl(src: string, size = 256): Promise<string | undefined> {
+  const img = await loadImage(src)
   if (!img || typeof document === 'undefined') return undefined
   const c = document.createElement('canvas')
-  c.width = 256
-  c.height = Math.max(1, Math.round(256 * (img.naturalHeight / Math.max(1, img.naturalWidth))))
+  c.width = size
+  c.height = Math.max(1, Math.round(size * (img.naturalHeight / Math.max(1, img.naturalWidth))))
   const x = c.getContext('2d')
   if (!x) return undefined
   x.drawImage(img, 0, 0, c.width, c.height)
   return c.toDataURL('image/png')
+}
+
+export async function loadAvatarDataUrl(src: string, size = 160): Promise<string | undefined> {
+  const img = await loadImage(src)
+  if (!img || typeof document === 'undefined') return undefined
+  const c = document.createElement('canvas')
+  c.width = size
+  c.height = size
+  const x = c.getContext('2d')
+  if (!x) return undefined
+  x.save()
+  x.beginPath()
+  x.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2)
+  x.clip()
+  const s = Math.min(img.naturalWidth, img.naturalHeight)
+  const sx = (img.naturalWidth - s) / 2
+  const sy = (img.naturalHeight - s) / 2
+  x.drawImage(img, sx, sy, s, s, 0, 0, size, size)
+  x.restore()
+  return c.toDataURL('image/png')
+}
+
+export async function loadLogoDataUrl(): Promise<string | undefined> {
+  return loadImageDataUrl(LOGO_SRC)
 }
 
 export function canvasToBlob(canvas: HTMLCanvasElement, type = 'image/jpeg', quality = 0.9): Promise<Blob> {
@@ -192,7 +205,7 @@ function drawHeader(
   ctx.fillText('WAFER JOURNEY!', titleX, 126)
   ctx.fillStyle = BRAND.text
   ctx.font = `600 40px ${FONT_DISPLAY}`
-  ctx.fillText('Production & Quality Control', titleX, 184)
+  ctx.fillText('Quality Assurance', titleX, 184)
   ctx.fillStyle = BRAND.dim
   ctx.font = `400 26px ${FONT_BODY}`
   ctx.fillText(
@@ -338,7 +351,7 @@ function drawFooter(ctx: CanvasRenderingContext2D, layout: FlowLayout): void {
   ctx.textAlign = 'center'
   ctx.fillStyle = BRAND.text
   ctx.font = `700 32px ${FONT_DISPLAY}`
-  ctx.fillText('WAFER JOURNEY! — PRODUCTION & QUALITY CONTROL', w / 2, top + 88)
+  ctx.fillText('WAFER JOURNEY! — QUALITY ASSURANCE', w / 2, top + 88)
   ctx.fillStyle = BRAND.red
   ctx.font = `700 24px ${FONT_BODY}`
   ctx.fillText(SITE.madeBy, w / 2, top + 122)
