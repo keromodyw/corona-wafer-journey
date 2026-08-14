@@ -1123,20 +1123,30 @@ html.lenis body {
 }
 
 @media (max-width: 720px) {
-  .brand-word em {
-    display: none;
+  .site-header {
+    height: auto;
+    min-height: var(--header-h);
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 14px;
+    padding: 10px 12px 8px;
+  }
+
+  .brand-word {
+    font-size: 0.95rem;
   }
 
   .header-tag .tag-sub {
     display: none;
   }
 
-  .qa-switch-label {
-    display: none;
+  .header-tag {
+    font-size: 0.62rem;
+    padding: 6px 12px;
   }
 
-  .site-header {
-    gap: 8px;
+  .qa-switch-label {
+    font-size: 0.7rem;
   }
 
   .stage-num {
@@ -1162,6 +1172,20 @@ html.lenis body {
 
   .hero-inner {
     padding-top: 170px;
+  }
+
+  .disclaimer {
+    align-items: flex-start;
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  .disclaimer-card {
+    min-height: 100vh;
+    min-height: 100svh;
+    max-height: none;
+    border-radius: 0;
+    border-width: 1px 0 0;
   }
 }
 

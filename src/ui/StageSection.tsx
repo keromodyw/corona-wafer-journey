@@ -77,7 +77,7 @@ export function StageSection({ stage, motionOk, qaVisible }: StageSectionProps) 
             <p className="stage-process">{stage.process}</p>
             {stage.fix && (
               <div className="stage-fix">
-                <del className="fix-wrong">{stage.fix.wrong}</del>
+                {stage.fix.wrong && <del className="fix-wrong">{stage.fix.wrong}</del>}
                 <span className="fix-right">{stage.fix.right}</span>
               </div>
             )}

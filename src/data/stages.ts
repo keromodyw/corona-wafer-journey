@@ -15,7 +15,7 @@ export interface Stage {
   qaRole: string
   checks: string[]
   control: ControlType
-  fix?: { wrong: string; right: string }
+  fix?: { wrong?: string; right: string }
 }
 
 export const STAGES: Stage[] = [
@@ -97,7 +97,6 @@ export const STAGES: Stage[] = [
       'Inside the machine the wafer sheets are divided into three paths — an upper way, a middle way and a lower way. The middle layers get the filling!',
     machine: 'Filling Machine · 3-Lane',
     fix: {
-      wrong: 'The filling is applied to every wafer sheet on all three lanes.',
       right: 'Only the middle-layer sheets receive the filling — the top and bottom stay bare.',
     },
     qaRole: 'Confirm only the middle-layer sheets get filling — right dose, spread evenly across each sheet.',
