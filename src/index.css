@@ -888,6 +888,10 @@ html.lenis body {
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
 }
 
+.flowchart-chart:first-child .flowchart-preview {
+  max-width: 340px;
+}
+
 .flowchart-preview img,
 .flowchart-preview canvas {
   display: block;
