@@ -866,10 +866,11 @@ html.lenis body {
 }
 
 .flowchart-charts {
-  display: flex;
-  flex-direction: column;
-  gap: 56px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(20px, 3vw, 44px);
   margin-top: 30px;
+  align-items: start;
 }
 
 .flowchart-chart {
@@ -1294,6 +1295,10 @@ html.lenis body {
 }
 
 @media (max-width: 860px) {
+  .flowchart-charts {
+    grid-template-columns: 1fr;
+  }
+
   .stage-body {
     grid-template-columns: 1fr;
     gap: 20px;
