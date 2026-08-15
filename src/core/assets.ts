@@ -1,4 +1,5 @@
 export const LOGO_SRC = `${import.meta.env.BASE_URL}logo/corona-logo.jpg`
+export const NORMAL_CHART_SRC = `${import.meta.env.BASE_URL}normal-flowchart.jpg`
 export const PRODUCT = {
   single: `${import.meta.env.BASE_URL}product/wafer-single.png`,
   poster: `${import.meta.env.BASE_URL}product/wafer-poster.jpg`,

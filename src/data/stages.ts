@@ -57,7 +57,7 @@ export const STAGES: Stage[] = [
   {
     id: 'air',
     num: 3,
-    title: 'Fresh Air',
+    title: 'Aeration',
     emoji: '🌬️',
     scene: 'air',
     process: 'Now a rectangular layer of wafer, it is carried through the fresh air for a while to stabilise before the next stage.',

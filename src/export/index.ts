@@ -1,7 +1,7 @@
 import type { Stage } from '../data/stages'
 import { renderFlowchart, canvasToBlob, loadLogoDataUrl, loadAvatarDataUrl } from './toCanvas'
 import { buildMultiPagePdf, buildSinglePagePdf } from './toPdf'
-import { downloadBlob, LOGO_SRC, INTERNS } from '../core/assets'
+import { downloadBlob, NORMAL_CHART_SRC, INTERNS } from '../core/assets'
 import { log } from '../core/log'
 
 export async function exportJpg(stages: Stage[]): Promise<void> {
@@ -14,10 +14,10 @@ export async function exportJpg(stages: Stage[]): Promise<void> {
 
 export async function exportNormalChart(): Promise<void> {
   log.info('export:normal:start')
-  const res = await fetch(LOGO_SRC)
+  const res = await fetch(NORMAL_CHART_SRC)
   if (!res.ok) throw new Error(`photo fetch failed: ${res.status}`)
   const blob = await res.blob()
-  downloadBlob(blob, 'munchi-photo.jpg')
+  downloadBlob(blob, 'normal-flowchart.jpg')
   log.info('export:normal:done')
 }
 

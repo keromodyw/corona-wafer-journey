@@ -3,6 +3,7 @@ import { STAGES } from '../data/stages'
 import { renderFlowchart } from '../export/toCanvas'
 import { FLOW_WIDTH } from '../export/layout'
 import { exportJpg, exportPdfSingle, exportPdfMulti, exportNormalChart } from '../export'
+import { NORMAL_CHART_SRC } from '../core/assets'
 import { log } from '../core/log'
 
 type BusyKey = 'normal' | 'jpg' | 'pdf-single' | 'pdf-multi'
@@ -53,19 +54,19 @@ export function FlowchartSection() {
     }
   }
 
-  const buttons: { key: BusyKey; label: string; fn: () => Promise<void>; ok: string }[] = [
-    { key: 'normal', label: 'Download normal chart', fn: () => exportNormalChart(), ok: 'Photo downloaded.' },
+  const normalButtons: { key: BusyKey; label: string; fn: () => Promise<void>; ok: string }[] = [
+    { key: 'normal', label: 'Download Normal Flowhart', fn: () => exportNormalChart(), ok: 'Photo downloaded.' },
+  ]
+
+  const flowButtons: { key: BusyKey; label: string; fn: () => Promise<void>; ok: string }[] = [
     { key: 'jpg', label: 'Download JPG', fn: () => exportJpg(STAGES), ok: 'JPG flowchart downloaded.' },
     { key: 'pdf-single', label: 'Download PDF · 1 page', fn: () => exportPdfSingle(STAGES), ok: 'Single-page PDF downloaded.' },
     { key: 'pdf-multi', label: 'Download PDF · detailed', fn: () => exportPdfMulti(STAGES), ok: 'Detailed multi-page PDF downloaded.' },
   ]
 
-  return (
-    <section className="flowchart" id="flowchart">
-      <h2>The Flowchart</h2>
-      <div className="flowchart-preview">
-        <canvas ref={canvasRef} aria-label="Preview of the wafer production flowchart" role="img" />
-      </div>
+  const renderRow = (title: string, buttons: typeof normalButtons) => (
+    <div className="flow-actions-row">
+      <span className="flow-row-title">{title}</span>
       <div className="flow-actions">
         {buttons.map((btn) => (
           <button
@@ -77,6 +78,28 @@ export function FlowchartSection() {
             {busy === btn.key ? 'Preparing…' : btn.label}
           </button>
         ))}
+      </div>
+    </div>
+  )
+
+  return (
+    <section className="flowchart" id="flowchart">
+      <h2>The Flowchart</h2>
+      <div className="flowchart-charts">
+        <div className="flowchart-chart">
+          <figure className="flowchart-preview">
+            <img src={NORMAL_CHART_SRC} alt="Normal production flowchart" />
+          </figure>
+          <figcaption className="flowchart-cap">Normal Flowchart - 1</figcaption>
+          {renderRow('Normal Flowchart - 1', normalButtons)}
+        </div>
+        <div className="flowchart-chart">
+          <figure className="flowchart-preview">
+            <canvas ref={canvasRef} aria-label="Preview of the wafer production flowchart" role="img" />
+          </figure>
+          <figcaption className="flowchart-cap">Flowchart - 2</figcaption>
+          {renderRow('Flowchart - 2', flowButtons)}
+        </div>
       </div>
       <div aria-live="polite">
         {toast && (

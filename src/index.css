@@ -865,8 +865,19 @@ html.lenis body {
   margin: 0 auto 10px;
 }
 
+.flowchart-charts {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  margin-top: 30px;
+}
+
+.flowchart-chart {
+  width: 100%;
+}
+
 .flowchart-preview {
-  margin: 30px auto 34px;
+  margin: 0 auto 14px;
   max-width: 920px;
   width: 100%;
   border-radius: 18px;
@@ -876,10 +887,36 @@ html.lenis body {
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
 }
 
+.flowchart-preview img,
 .flowchart-preview canvas {
   display: block;
   width: 100%;
   height: auto;
+}
+
+.flowchart-cap {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  color: var(--dim);
+  margin-bottom: 16px;
+}
+
+.flow-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px 18px;
+}
+
+.flow-row-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  color: var(--yellow);
 }
 
 .flow-actions {
@@ -887,7 +924,6 @@ html.lenis body {
   gap: 14px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-top: 8px;
 }
 
 /* ---------- product ---------- */
@@ -1307,6 +1343,11 @@ html.lenis body {
 
   .stage:nth-child(odd) .stage-num {
     right: 0;
+  }
+
+  .flow-actions-row {
+    flex-direction: column;
+    gap: 12px;
   }
 
   .flow-actions .btn {
